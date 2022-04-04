@@ -1,91 +1,114 @@
+//From: https://www.npmjs.com/package/react-responsive-carousel
 import Head from "next/head";
 import Image from "next/image";
 
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { Carousel } from "react-responsive-carousel";
-
-import Header from "../components/Header.js";
+import { Carousel } from 'react-responsive-carousel';
 
 export default function Home() {
     return (
-        <div id="root" className="container">
+        <div className="container">
             <Head>
-                <title>NodeTek</title>
-                <link rel="icon" href="/nodetek.ico" />
+                <title>Carousel</title>
+                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <main>
-                <Header />
+                <h1 className="title">
+                    Carousel
+                </h1>
+                <h3 className="subtitle">
+                    Meta 3.8 semana 8
+                </h3>
 
                 <Carousel
                     showThumbs={false}
-                    showStatus={false}
-                    infiniteLoop={true}
                 >
-                    <div className="product">
+                    <div>
                         <Image
                             src="/arduinoUno.jpg"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Arduino Uno</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Arduino Uno
+                        </p>
                     </div>
-                    <div className="product">
+                    <div>
                         <Image
                             src="/arduinoMega.jpg"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Arduino Mega</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Arduino Mega
+                        </p>
                     </div>
-                    <div className="product">
+                    <div>
                         <Image
                             src="/arduinoNano.png"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Arduino Nano</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Arduino Nano
+                        </p>
                     </div>
-                    <div className="product">
+                    <div>
                         <Image
                             src="/raspberryPi4.jpg"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi 4</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Raspberry Pi 4
+                        </p>
                     </div>
-                    <div className="product">
+                    <div>
                         <Image
                             src="/raspberryPiPico.jpg"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi Pico</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Raspberry Pi Pico
+                        </p>
                     </div>
-                    <div className="product">
+                    <div>
                         <Image
                             src="/raspberryPiZero.jpg"
                             width={250}
                             height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi Zero</h1>
-                        </div>
+                            quality={100} />
+                        <p>
+                            Raspberry Pi Zero
+                        </p>
                     </div>
                 </Carousel>
+
             </main>
 
             <style jsx>{`
+                .container {
+                    min-height: 100vh;
+                    padding: 0 0.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                main {
+                    padding: 5rem 0;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+
                 a {
                     color: inherit;
                     text-decoration: none;
@@ -118,6 +141,16 @@ export default function Home() {
                     font-size: 1.5rem;
                 }
 
+                code {
+                    background: #fafafa;
+                    border-radius: 5px;
+                    padding: 0.75rem;
+                    font-size: 1.1rem;
+                    font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
+                        DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New,
+                        monospace;
+                }
+
                 .grid {
                     display: flex;
                     align-items: center;
@@ -128,9 +161,15 @@ export default function Home() {
                     margin-top: 3rem;
                 }
 
+                .gallery {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+
                 .card {
                     margin: 1rem;
-                    flex-basis: 45%;
                     padding: 1.5rem;
                     text-align: left;
                     color: inherit;
@@ -158,10 +197,8 @@ export default function Home() {
                     line-height: 1.5;
                 }
 
-                .product {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
+                .logo {
+                    height: 1em;
                 }
 
                 @media (max-width: 600px) {

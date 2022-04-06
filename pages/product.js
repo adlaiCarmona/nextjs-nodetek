@@ -5,7 +5,7 @@ import Header from "../components/Header.js";
 
 export default function Home() {
     let info = {
-        name: "Raspberry Pi",
+        name: "Raspberry Pi 4",
         details: "Raspberry Pi 4 Model B is the latest product in the popular Raspberry Pi range of computers. It offers ground-breaking increases in processor speed, multimedia performance, memory, and connectivity compared to the prior-generation Raspberry Pi 3 Model B+, while retaining backwards compatibility and similar power consumption.",
         img: "/raspberryPi4.jpg",
         price: 50

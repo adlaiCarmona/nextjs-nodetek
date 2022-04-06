@@ -2,46 +2,76 @@ import { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
-import { styled, Box, Button, MenuItem, Modal, Select, TextField } from "@mui/material";
+import {
+    styled,
+    Box,
+    Button,
+    Grid,
+    MenuItem,
+    Modal,
+    Select,
+    TextField,
+} from "@mui/material";
 
+import Controls from "../components/controls/Controls.js";
+import { useForm, Form } from "../components/useForm";
+import { verifyCard } from "/components/verifyCard";
 import Header from "../components/Header.js";
 
-const FormNewCard = () => {
-    const [month, setMonth] = useState(1);
-    const [year, setYear] = useState(2022);
+const initialFValues = {
+    fullName: "",
+    card: "",
+    expMonth: "",
+    expYear: "",
+    expDate: "",
+};
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
-
+const FormNewCard = ({ values, handleInputChange, errors, handleSubmit }) => {
     return (
-        <Box component="form" style={{ display:'flex', gap:'15px'}}>
-            <TextField required id="card" label="Número de tarjeta" />
-            <TextField required id="password" label="Nombre en la tarjeta" />
-            <Select
-                id="exp-month"
-                value={month}
-                label="Month"
-                onChange={(event) => setMonth(event.target.value)}
-            >
-
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-            </Select>
-            <Select
-                id="exp-year"
-                value={year}
-                label="Year"
-                onChange={(event) => setYear(event.target.value)}
-            >
-
-                <MenuItem value={2022}>2022</MenuItem>
-                <MenuItem value={2023}>2023</MenuItem>
-                <MenuItem value={2024}>2024</MenuItem>
-            </Select>
-            <Button>Agregar</Button>
-        </Box>
+        <Form onSubmit={handleSubmit}>
+            <Grid container>
+                <Controls.Input
+                    label="Número de tarjeta"
+                    name="card"
+                    value={values.card}
+                    onChange={handleInputChange}
+                    error={errors.card}
+                />
+                <Controls.Input
+                    label="Nombre en la tarjeta"
+                    name="fullName"
+                    value={values.fullName}
+                    onChange={handleInputChange}
+                    error={errors.fullName}
+                    type="fullName"
+                />
+                <Controls.Select
+                    name="expMonth"
+                    label="Mes"
+                    value={values.expMonth}
+                    onChange={handleInputChange}
+                    options={[...Array(12).keys()].map((num) => {
+                        return {
+                            id: (num + 1).toString(),
+                            title: (num + 1).toString(),
+                        };
+                    })}
+                    error={errors.expMonth}
+                />
+                <Controls.Select
+                    name="expYear"
+                    label="Año"
+                    value={values.expYear}
+                    onChange={handleInputChange}
+                    options={[
+                        { id: "1", title: "2022" },
+                        { id: "1", title: "2023" },
+                        { id: "1", title: "2024" },
+                    ]}
+                    error={errors.expYear}
+                />
+            </Grid>
+        </Form>
     );
 };
 
@@ -53,6 +83,52 @@ export default function Home() {
             ending: "7136",
         },
     ];
+
+    const initialFValues = {
+        fullName: "",
+        card: "",
+        expMonth: "",
+        expYear: "",
+        expDate: "",
+    };
+
+    const validate = (fieldValues = values) => {
+        let temp = { ...errors };
+        if ("fullName" in fieldValues)
+            temp.fullName = fieldValues.fullName
+                ? ""
+                : "This field is required.";
+        if ("card" in fieldValues) {
+            const cardInfo = verifyCard(fieldValues.card);
+            console.log(cardInfo);
+            temp.card = cardInfo.success ? "" : "Card is not valid.";
+        }
+        setErrors({
+            ...temp,
+        });
+
+        if (fieldValues == values)
+            return Object.values(temp).every((x) => x == "");
+    };
+
+    const {
+        values,
+        setValues,
+        errors,
+        setErrors,
+        handleInputChange,
+        resetForm,
+    } = useForm(initialFValues, true, validate);
+
+    // have to change handle to own service!!
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (validate()) {
+            //employeeService.insertEmployee(values);
+            resetForm();
+        }
+    };
+
     return (
         <div id="root" className="container">
             <Head>
@@ -94,7 +170,17 @@ export default function Home() {
                             );
                         })}
                     </div>
-                    <FormNewCard />
+                    <FormNewCard
+                        values={values}
+                        handleInputChange={handleInputChange}
+                        errors={errors}
+                        handleSubmit={handleSubmit}
+                    />
+                    <Controls.Button
+                        text="Registrarse"
+                        color="secondary"
+                        onClick={resetForm}
+                    />
                 </div>
             </main>
 

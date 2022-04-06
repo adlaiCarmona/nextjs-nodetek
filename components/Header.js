@@ -2,9 +2,20 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { styled, Box, Button, Input, Modal, TextField } from "@mui/material";
+import { styled, Box, Grid, Input, Modal, TextField } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faUser } from "@fortawesome/free-solid-svg-icons";
+
+import Controls from "/components/controls/Controls.js";
+import { useForm, Form } from "/components/useForm";
+import * as employeeService from "../services/employeeService";
+
+const initialFValues = {
+    fullName: "",
+    email: "",
+    password: "",
+    rePassword: "",
+};
 
 const SearchBar = styled(Input)({
     // maybe use input rather than textfiel; check: https://stackoverflow.com/questions/56122219/in-mui-when-do-we-use-input-vs-textfield-for-building-a-form
@@ -16,50 +27,64 @@ const SearchBar = styled(Input)({
     input: { padding: 12 },
 });
 
-const FormLogIn = () => {
+const FormLogIn = ({ values, handleInputChange, errors, handleSubmit }) => {
     return (
-        <Box component="form">
-            <div>
-                <TextField required id="email" label="Correo" />
-            </div>
-            <div>
-                <TextField
-                    required
-                    id="password"
-                    type="password"
-                    label="Contraseña"
+        <Form onSubmit={handleSubmit}>
+            <Grid container>
+                <Controls.Input
+                    label="Email"
+                    name="email"
+                    value={values.email}
+                    onChange={handleInputChange}
+                    error={errors.email}
                 />
-            </div>
-        </Box>
+                <Controls.Input
+                    label="Contraseña"
+                    name="password"
+                    value={values.password}
+                    onChange={handleInputChange}
+                    error={errors.password}
+                    type="password"
+                />
+            </Grid>
+        </Form>
     );
 };
 
-const FormSignUp = () => {
+const FormSignUp = ({ values, handleInputChange, errors, handleSubmit }) => {
     return (
-        <Box component="form">
-            <div>
-                <TextField required id="name" label="Nombre" />
-            </div>
-            <div>
-                <TextField required id="email" label="Correo" />
-            </div>
-            <div>
-                <TextField
-                    required
-                    id="password"
-                    type="password"
+        <Form onSubmit={handleSubmit}>
+            <Grid container>
+                <Controls.Input
+                    label="Nombre"
+                    name="fullName"
+                    value={values.fullName}
+                    onChange={handleInputChange}
+                    error={errors.fullName}
+                />
+                <Controls.Input
+                    label="Email"
+                    name="email"
+                    value={values.email}
+                    onChange={handleInputChange}
+                    error={errors.email}
+                />
+                <Controls.Input
                     label="Contraseña"
+                    name="password"
+                    value={values.password}
+                    onChange={handleInputChange}
+                    error={errors.password}
                 />
-            </div>
-            <div>
-                <TextField
-                    required
-                    id="rePassword"
-                    type="password"
+                <Controls.Input
                     label="Confirma contraseña"
+                    name="rePassword"
+                    value={values.rePassword}
+                    onChange={handleInputChange}
+                    error={errors.password}
                 />
-            </div>
-        </Box>
+            </Grid>
+        </Form>
     );
 };
 
@@ -69,6 +94,46 @@ const Header = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const validate = (fieldValues = values) => {
+        let temp = { ...errors };
+        if ("fullName" in fieldValues)
+            temp.fullName = fieldValues.fullName
+                ? ""
+                : "This field is required.";
+        if ("email" in fieldValues)
+            temp.email = /$^|.+@.+..+/.test(fieldValues.email)
+                ? ""
+                : "Email is not valid.";
+        if ("rePassword" in fieldValues != "password" in fieldValues)
+            temp.rePassword = fieldValues.rePassword
+                ? ""
+                : "Invalid Credentials.";
+        setErrors({
+            ...temp,
+        });
+
+        if (fieldValues == values)
+            return Object.values(temp).every((x) => x == "");
+    };
+
+    const {
+        values,
+        setValues,
+        errors,
+        setErrors,
+        handleInputChange,
+        resetForm,
+    } = useForm(initialFValues, true, validate);
+
+    // have to change handle to own service!!
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (validate()) {
+            employeeService.insertEmployee(values);
+            resetForm();
+        }
+    };
 
     return (
         <div id="header" className="container">
@@ -85,9 +150,11 @@ const Header = () => {
 
             <div className="search-bar">
                 <SearchBar disableUnderline={true} />
-                <div className="search-button">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                </div>
+                <Link href="/product">
+                    <div className="search-button">
+                        <FontAwesomeIcon icon={faMagnifyingGlass} />
+                    </div>
+                </Link>
             </div>
 
             <div id="user" onClick={handleOpen}>
@@ -99,14 +166,28 @@ const Header = () => {
             </div>
             <Modal open={open} onClose={handleClose}>
                 <div className="modal">
-                    {isLogged ? <FormLogIn /> : <FormSignUp />}
+                    {isLogged ? (
+                        <FormLogIn
+                            values={values}
+                            handleInputChange={handleInputChange}
+                            errors={errors}
+                            handleSubmit={handleSubmit}
+                        />
+                    ) : (
+                        <FormSignUp
+                            values={values}
+                            handleInputChange={handleInputChange}
+                            errors={errors}
+                            handleSubmit={handleSubmit}
+                        />
+                    )}
                     <div>
-                        <Button variant="contained" color="primary">
-                            Iniciar Sesion
-                        </Button>
-                        <Button variant="contained" color="secondary">
-                            Registrarse
-                        </Button>
+                        <Controls.Button type="login" text="Iniciar Sesión" />
+                        <Controls.Button
+                            text="Registrarse"
+                            color="secondary"
+                            onClick={resetForm}
+                        />
                     </div>
                 </div>
             </Modal>

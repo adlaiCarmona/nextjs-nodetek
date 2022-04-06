@@ -14,7 +14,9 @@ import {
 
 import Header from "../components/Header.js";
 
-const FormNewCard = () => {
+// Falta validacion de la meta 3.7
+
+const FormNewLocation = () => {
     const [location, setLocation] = useState({
         name: "",
         country: "",
@@ -22,6 +24,8 @@ const FormNewCard = () => {
         postalCode: 0,
         phone: "",
     });
+
+    const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
     return (
         <Box component="form" style={{ display: "flex", gap: "15px" }}>
@@ -83,7 +87,7 @@ export default function Home() {
                             );
                         })}
                     </div>
-                    <FormNewCard />
+                    <FormNewLocation />
                 </div>
             </main>
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import {
     styled,
     Box,
@@ -17,6 +18,7 @@ import Header from "../components/Header.js";
 // Falta validacion de la meta 3.7
 
 const FormNewLocation = () => {
+
     const [location, setLocation] = useState({
         name: "",
         country: "",
@@ -158,3 +160,5 @@ export default function Home() {
         </div>
     );
 }
+
+export const getServerSideProps = withPageAuthRequired();

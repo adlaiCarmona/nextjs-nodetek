@@ -1,16 +1,17 @@
 import Head from "next/head";
 
-import useUser from "../lib/useUser";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import Header from "../components/Header.js";
 
 export default function Home() {
-    // Fetch the user client-side
-    const { user } = useUser({ redirectTo: "/login" });
+    const { user, error, isLoading } = useUser();
+    const router = useRouter()
 
-    // Server-render loading state
-    if (!user || user.isLoggedIn === false) {
-        return <div>Loading...</div>;
-    }
+    useEffect(() => {
+        if (!(user || isLoading)) {
+          router.push('/api/auth/login')
+        }
+      }, [user, isLoading])
 
     return (
         <div id="root" className="container">
@@ -96,3 +97,5 @@ export default function Home() {
         </div>
     );
 }
+
+export const getServerSideProps = withPageAuthRequired();

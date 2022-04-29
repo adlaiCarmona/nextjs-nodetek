@@ -2,6 +2,7 @@ import { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import {
     styled,
     Box,
@@ -76,6 +77,15 @@ const FormNewCard = ({ values, handleInputChange, errors, handleSubmit }) => {
 };
 
 export default function Home() {
+    const { user, error, isLoading } = useUser();
+    const router = useRouter()
+
+    useEffect(() => {
+        if (!(user || isLoading)) {
+          router.push('/api/auth/login')
+        }
+      }, [user, isLoading])
+
     const cards = [
         {
             name: "Daniel Carmona",
@@ -251,3 +261,5 @@ export default function Home() {
         </div>
     );
 }
+
+export const getServerSideProps = withPageAuthRequired();

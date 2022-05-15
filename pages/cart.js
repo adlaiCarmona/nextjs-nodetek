@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
 import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useUser } from "@auth0/nextjs-auth0";
 
 import Header from "../components/Header.js";
 
@@ -20,7 +22,27 @@ const ShoppingItem = (props) => {
                 <h3>{props.description}</h3>
             </div>
             <div>
-                <div className="icon">
+                <div
+                    className="icon"
+                    onClick={async () => {
+                        console.log(props.userId)
+                        if (props.userId)
+                            await fetch(
+                                `/api/db/user/list?listType=shoppingCart&userId=${props.userId}`,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        productId: props.productId,
+                                        operation: "remove",
+                                    }),
+                                }
+                            );
+                            
+                    }}
+                >
                     <FontAwesomeIcon icon={faTrashCan} />
                 </div>
             </div>
@@ -41,11 +63,17 @@ const ShoppingItem = (props) => {
                         height: 50px;
                         border: 1px #f7f7f7;
                         border-radius: 20px;
-                        background-color: #d01010;
+                        background-color: #ffd814;
                         display: flex;
                         justify-content: center;
                         align-items: center;
                         cursor: pointer;
+                    }
+
+                    .icon:hover,
+                    .icon:focus,
+                    .icon:active {
+                        background-color: #f7ca00;
                     }
                 `}
             </style>
@@ -54,22 +82,31 @@ const ShoppingItem = (props) => {
 };
 
 export default function Home() {
-    const shoppingCart = [
-        {
-            name: "Raspberry Pi 4",
-            description:
-                "Raspberry Pi 4 Model B is the latest product in the popular Raspberry Pi range of computers. It offers ground-breaking increases in processor speed, multimedia performance, memory, and connectivity compared to the prior-generation Raspberry Pi 3 Model B+, while retaining backwards compatibility and similar power consumption.",
-            price: 50,
-            img: "/raspberryPi4.jpg",
-        },
-        {
-            name: "Arduino Uno",
-            description:
-                "Raspberry Pi 4 Model B is the latest product in the popular Raspberry Pi range of computers. It offers ground-breaking increases in processor speed, multimedia performance, memory, and connectivity compared to the prior-generation Raspberry Pi 3 Model B+, while retaining backwards compatibility and similar power consumption.",
-            price: 50,
-            img: "/arduinoUno.jpg",
-        },
-    ];
+    const { user, isLoading } = useUser();
+    const [userId, setUserId] = useState(null);
+    const [shoppingCart, setShoppingCart] = useState([]);
+
+    useEffect(async () => {
+        const getData = async () => {
+            const userDb = await (
+                await fetch(`/api/db/user?email=${user?.email}`)
+            ).json();
+            setUserId(userDb?._id);
+            const userCart = [];
+
+            for (const itemId of userDb.shoppingCart) {
+                const product = await (
+                    await fetch(`/api/db/product?id=${itemId}`)
+                ).json();
+                userCart.push(product);
+            }
+
+            setShoppingCart(userCart);
+        };
+
+        if (!isLoading) getData();
+    }, [isLoading]);
+
     return (
         <div id="root" className="container">
             <Head>
@@ -93,9 +130,12 @@ export default function Home() {
                             return (
                                 <ShoppingItem
                                     name={item.name}
-                                    description={item.description}
+                                    description={item.details}
                                     price={item.price}
                                     src={item.img}
+                                    userId={userId}
+                                    productId={item._id}
+                                    key={item._id}
                                 />
                             );
                         })
@@ -157,3 +197,23 @@ export default function Home() {
         </div>
     );
 }
+
+// // This also gets called at build time
+// export async function getServerSideProps(context) {
+
+//     const { user, isLoading } = useUser(); // cant use hooks outside redners
+//     const userDb = await (
+//         await fetch(`/api/db/user?email=${user?.email}`)
+//     ).json();
+//     const products = await (
+//         await fetch(`http://localhost:3000/api/db/user/list?listType=shoppingCart&userId=${userDb._id}`)
+//     ).json();
+//     console.log(
+//         `products from /api/db/product =>\n${JSON.stringify(
+//             products
+//         )}`
+//     );
+
+//     // Pass post data to the page via props
+//     return { props: { products } };
+// }

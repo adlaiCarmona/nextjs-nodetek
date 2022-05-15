@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Head from "next/head";
 
-import Modal from "../components/Modal.js";
+import Modal from "../../components/Modal.js";
 
 export default function Home() {
     const [showModal, setShowModal] = useState(false);

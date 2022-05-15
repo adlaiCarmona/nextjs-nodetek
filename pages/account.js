@@ -1,16 +1,21 @@
+import { useEffect } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { useUser } from "@auth0/nextjs-auth0";
+
 import Header from "../components/Header.js";
 
 export default function Home() {
     const { user, error, isLoading } = useUser();
-    const router = useRouter()
+    const router = useRouter();
 
     useEffect(() => {
         if (!(user || isLoading)) {
           router.push('/api/auth/login')
         }
+        console.log(`user: ${user}`);
       }, [user, isLoading])
 
     return (

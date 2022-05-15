@@ -7,10 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
 
-import Controls from "/components/controls/Controls.js";
-import { useForm, Form } from "/components/useForm";
-import * as employeeService from "../services/employeeService";
-
 const SearchBar = styled(Input)({
     // maybe use input rather than textfiel; check: https://stackoverflow.com/questions/56122219/in-mui-when-do-we-use-input-vs-textfield-for-building-a-form
     width: 300,
@@ -23,19 +19,21 @@ const SearchBar = styled(Input)({
 
 const Header = () => {
     const { user, error, isLoading } = useUser();
-    
-    if(error) console.log(error.message);
-    
+
+    if (error) console.log(error.message);
+
     return (
         <div id="header" className="container">
             <div className="tab-img">
                 <Link href="/">
-                    <Image
-                        src="/NodetekNameWY.png"
-                        width={170}
-                        height={35}
-                        quality={100}
-                    />
+                    <a>
+                        <Image
+                            src="/NodetekNameWY.png"
+                            width={170}
+                            height={35}
+                            quality={100}
+                        />
+                    </a>
                 </Link>
             </div>
 

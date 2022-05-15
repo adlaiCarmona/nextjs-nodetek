@@ -2,29 +2,29 @@
 
 const express = require('express');
 const next = require('next');
+const mongoose = require('mongoose');
+require('dotenv/config');
 
 const PORT = process.env.PORT || 3000
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+// DB Connection
+mongoose.connect(process.env.DB_URI, {useNewUrlParser:true, useUnifiedTopology:true})
+.then( () => {
+    console.log('DB Connected!')
+})
+.catch( err => {
+    console.log(err)
+})
+
 app.prepare()
     .then(() => {
         const server = express()
 
-        server.get('/a', (req, res) => {
-            return app.render(req, res, '/b', req.query)
-        })
-
-        server.get('/b', (req, res) => {
-            return app.render(req, res, '/a', req.query)
-        })
-
-        server.get('/posts/:id', (req, res) => {
-            return app.render(req, res, '/posts', { id: req.params.id })
-        })
-
-        server.get('*', (req, res) => {
+        // changed from server.get to server.all
+        server.all('*', (req, res) => {
             return handle(req, res)
         })
 

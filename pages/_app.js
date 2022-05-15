@@ -1,11 +1,13 @@
-import { UserProvider } from "@auth0/nextjs-auth0"
+import { UserProvider } from "@auth0/nextjs-auth0";
 
-UserProvider
+UserProvider; //test if needed
 
-export default function MyApp({ Component, pageProps }) {
-  return (
-  <UserProvider>
-    <Component {...pageProps} />
-  </UserProvider>
-  )
+// can add layout and keep component as children to have header and footer in every page
+// source: https://nextjs.org/docs/basic-features/layouts
+export default function MyApp({ Component, pageProps, footerData }) {
+    return (
+        <UserProvider>
+            <Component {...pageProps} footerData={footerData} />
+        </UserProvider>
+    );
 }

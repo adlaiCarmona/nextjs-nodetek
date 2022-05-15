@@ -4,9 +4,9 @@ import Image from "next/image";
 
 import { useUser } from "@auth0/nextjs-auth0";
 
-import Header from "../components/Header.js";
+import Header from "../../components/Header.js";
 
-export default function Home() {
+export default function Home({ product }) {
     const { user, isLoading } = useUser();
     let userId = null;
 
@@ -35,7 +35,7 @@ export default function Home() {
     return (
         <div id="root" className="container">
             <Head>
-                <title>{info.name}</title>
+                <title>{product.name}</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
@@ -45,25 +45,25 @@ export default function Home() {
                 <div className="container">
                     <div className="product">
                         <div className="image">
-                            <Image src={info.img} width={400} height={360} />
+                            <Image src={product.img} width={400} height={360} />
                         </div>
                         <div className="details">
-                            <h1>{info.name}</h1>
-                            <h2>${info.price}</h2>
+                            <h1>{product.name}</h1>
+                            <h2>${product.price}</h2>
                             <div
                                 className="button-buy"
                                 onClick={async () => {
                                     if (userId)
-                                    
                                         await fetch(
                                             `/api/db/user/list?listType=shoppingCart&userId=${userId}`,
                                             {
                                                 method: "POST",
                                                 headers: {
-                                                    'Content-Type': 'application/json'
-                                                  },
+                                                    "Content-Type":
+                                                        "application/json",
+                                                },
                                                 body: JSON.stringify({
-                                                    productId: info.id,
+                                                    productId: product._id,
                                                     operation: "add",
                                                 }),
                                             }
@@ -81,10 +81,11 @@ export default function Home() {
                                             {
                                                 method: "POST",
                                                 headers: {
-                                                    'Content-Type': 'application/json'
-                                                  },
+                                                    "Content-Type":
+                                                        "application/json",
+                                                },
                                                 body: JSON.stringify({
-                                                    productId: info.id,
+                                                    productId: product._id,
                                                     operation: "add",
                                                 }),
                                             }
@@ -94,7 +95,7 @@ export default function Home() {
                                 Wishlist
                             </div>
 
-                            <h3>{info.details}</h3>
+                            <h3>{product.details}</h3>
                         </div>
                     </div>
                 </div>
@@ -104,6 +105,10 @@ export default function Home() {
                 a {
                     color: inherit;
                     text-decoration: none;
+                }
+
+                h3 {
+                    font-weight: regular;
                 }
 
                 .title a {
@@ -126,6 +131,7 @@ export default function Home() {
                 .details {
                     display: flex;
                     flex-direction: column;
+                    gap: 5px;
                     max-width: 40%;
                 }
 
@@ -135,6 +141,7 @@ export default function Home() {
                     border: 1px solid #fcd200;
                     border-radius: 20px;
                     cursor: pointer;
+                    padding: 5px;
                     box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
                     transition: all 0.1s linear;
                 }
@@ -142,13 +149,7 @@ export default function Home() {
                 .button-buy:hover,
                 .button-buy:focus,
                 .button-buy:active {
-                    text-align: center;
                     background-color: #f7ca00;
-                    border: 1px solid #f2c200;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
-                    transition: all 0.1s linear;
                 }
 
                 .button-wishlist {
@@ -156,6 +157,7 @@ export default function Home() {
                     background-color: #ffa41c;
                     border: 1px solid #ff8f00;
                     border-radius: 20px;
+                    padding: 5px;
                     cursor: pointer;
                     box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
                     transition: all 0.1s linear;
@@ -164,13 +166,7 @@ export default function Home() {
                 .button-wishlist:hover,
                 .button-wishlist:focus,
                 .button-wishlist:active {
-                    text-align: center;
                     background-color: #fa8900;
-                    border: 1px solid #e3931e;
-                    border-radius: 20px;
-                    cursor: pointer;
-                    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
-                    transition: all 0.1s linear;
                 }
 
                 @media (max-width: 600px) {
@@ -197,4 +193,43 @@ export default function Home() {
             `}</style>
         </div>
     );
+}
+
+// from: https://nextjs.org/docs/basic-features/pages
+
+// This function gets called at build time
+export async function getStaticPaths() {
+    // Call an external API endpoint to get posts
+    const res = await fetch('http://localhost:3000/api/db/product')
+    const products = await res.json()
+  
+    // Get the paths we want to pre-render based on posts
+    const paths = products.map((product) => ({
+      params: { id: product._id.toString() },
+    }))
+  
+    // We'll pre-render only these paths at build time.
+    // { fallback: false } means other routes should 404.
+    return { paths, fallback: false }
+  }
+  
+
+// This also gets called at build time
+export async function getStaticProps({ params }) {
+    // params contains the post `id`.
+    // If the route is like /posts/1, then params.id is 1
+    // const res = await fetch(`https://localhost:3000/product/${params.id}`);
+    // const post = await res.json();
+
+    const product = await (
+        await fetch(`http://localhost:3000/api/db/product?id=${params.id}`)
+    ).json();
+    console.log(
+        `product from /api/db/product?id=${params.id} =>\n${JSON.stringify(
+            product
+        )}`
+    );
+
+    // Pass post data to the page via props
+    return { props: { product } };
 }

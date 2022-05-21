@@ -1,11 +1,17 @@
 // API GET route => '/api/db/user/list?list=${list}&userId=${userId}'
 const mongoose = require('mongoose');
-// const User = require('../../../../models/User');
+// decrypt from https://www.labnol.org/code/encrypt-decrypt-javascript-200307
+const CryptoJS = require('crypto-js');
+
+const decrypt = (data) => {
+    return CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Utf8);
+};
 
 export default async (req, res) => {
     // should change instead of list == 'wishlist' or 'shoppingCart' be ie 0 => wishlist; 1 => shoppingCart
     //console.log('API route /api/db/user/list\nreqs => ' + JSON.stringify(req))
-    const { listType, userId } = req.query;
+    const { listType } = req.query;
+    const { userId } = decrypt(req.query.userId);
     const uid = mongoose.Types.ObjectId(userId);
 
     const MongooseUser = mongoose.model('User');

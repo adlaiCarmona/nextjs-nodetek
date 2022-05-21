@@ -3,8 +3,13 @@ import Head from "next/head";
 import Image from "next/image";
 
 import { useUser } from "@auth0/nextjs-auth0";
+const CryptoJS = require('crypto-js');
 
 import Header from "../../components/Header.js";
+
+const encrypt = (text) => {
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
+};
 
 export default function Home({ product }) {
     const { user, isLoading } = useUser();
@@ -55,7 +60,7 @@ export default function Home({ product }) {
                                 onClick={async () => {
                                     if (userId)
                                         await fetch(
-                                            `/api/db/user/list?listType=shoppingCart&userId=${userId}`,
+                                            `/api/db/user/list?listType=shoppingCart&userId=${encrypt(userId)}`,
                                             {
                                                 method: "POST",
                                                 headers: {
@@ -77,7 +82,7 @@ export default function Home({ product }) {
                                 onClick={async () => {
                                     if (userId)
                                         await fetch(
-                                            `/api/db/user/list?listType=wishlist&userId=${userId}`,
+                                            `/api/db/user/list?listType=wishlist&userId=${encrypt(userId)}`,
                                             {
                                                 method: "POST",
                                                 headers: {

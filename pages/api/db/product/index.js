@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require('../../../../models/Product');
 
+
 export default async function handler(req, res) {
     if (req.method === "GET") {
         const MongooseProduct = mongoose.model("Product");

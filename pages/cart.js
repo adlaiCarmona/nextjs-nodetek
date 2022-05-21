@@ -6,10 +6,16 @@ import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
+const CryptoJS = require('crypto-js');
 
 import Header from "../components/Header.js";
 
+const encrypt = (text) => {
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
+};
+
 const ShoppingItem = (props) => {
+
     return (
         <div className="shopping-item">
             <div>
@@ -25,10 +31,10 @@ const ShoppingItem = (props) => {
                 <div
                     className="icon"
                     onClick={async () => {
-                        console.log(props.userId)
+                        // console.log(`userId not encrypted ${props.userId}\nuserId encrypted ${encrypt(props.userId)}`)
                         if (props.userId)
                             await fetch(
-                                `/api/db/user/list?listType=shoppingCart&userId=${props.userId}`,
+                                `/api/db/user/list?listType=shoppingCart&userId=${encrypt(props.userId)}`,
                                 {
                                     method: "POST",
                                     headers: {

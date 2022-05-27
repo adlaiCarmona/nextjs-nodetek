@@ -1,10 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
-
-import Header from "../components/Header.js";
 
 export default function Home() {
     return (
@@ -14,74 +13,84 @@ export default function Home() {
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <Header />
-
+            <main className="section">
                 <Carousel
                     showThumbs={false}
                     showStatus={false}
                     infiniteLoop={true}
                 >
-                    <div className="product">
-                        <Image
-                            src="/arduinoUno.jpg"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Arduino Uno</h1>
+                    <Link href="/products/6281237a2799a031378aeaef">
+                        <div className="product">
+                            <Image
+                                src="/arduinoUno.jpg"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Arduino Uno</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div className="product">
-                        <Image
-                            src="/arduinoMega.jpg"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Arduino Mega</h1>
+                    </Link>
+                    <Link href="">
+                        <div className="product">
+                            <Image
+                                src="/arduinoMega.jpg"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Arduino Mega</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div className="product">
-                        <Image
-                            src="/arduinoNano.png"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Arduino Nano</h1>
+                    </Link>
+                    <Link href="">
+                        <div className="product">
+                            <Image
+                                src="/arduinoNano.png"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Arduino Nano</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div className="product">
-                        <Image
-                            src="/raspberryPi4.jpg"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi 4</h1>
+                    </Link>
+                    <Link href="/products/627efc79d3d7d85f5f62aa7e">
+                        <div className="product">
+                            <Image
+                                src="/raspberryPi4.jpg"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Raspberry Pi 4</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div className="product">
-                        <Image
-                            src="/raspberryPiPico.jpg"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi Pico</h1>
+                    </Link>
+                    <Link href="">
+                        <div className="product">
+                            <Image
+                                src="/raspberryPiPico.jpg"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Raspberry Pi Pico</h1>
+                            </div>
                         </div>
-                    </div>
-                    <div className="product">
-                        <Image
-                            src="/raspberryPiZero.jpg"
-                            width={250}
-                            height={250}
-                        />
-                        <div>
-                            <h1>Raspberry Pi Zero</h1>
+                    </Link>
+                    <Link href="">
+                        <div className="product">
+                            <Image
+                                src="/raspberryPiZero.jpg"
+                                width={250}
+                                height={250}
+                            />
+                            <div>
+                                <h1>Raspberry Pi Zero</h1>
+                            </div>
                         </div>
-                    </div>
+                    </Link>
                 </Carousel>
             </main>
 
@@ -169,6 +178,10 @@ export default function Home() {
                         width: 100%;
                         flex-direction: column;
                     }
+                }
+
+                .section {
+                    height: 88vh;
                 }
             `}</style>
 

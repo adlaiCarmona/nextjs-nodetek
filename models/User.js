@@ -7,8 +7,9 @@ const userSchema = new mongoose.Schema({
     shoppingCart: {type: Array},
     wishlist: {type: Array},
     locations: {type: Array},
-    payment: {type: Array},
+    payments: {type: Array},
     orders: {type: Array},
+    isAdmin: {type: Boolean},
 });
 
 export default mongoose.models?.User || mongoose.model('User', userSchema);

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
+
+import { useUser } from "@auth0/nextjs-auth0";
 
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import {
@@ -14,20 +16,89 @@ import {
     TextField,
 } from "@mui/material";
 
+import { encrypt } from "../helpers/index.js";
 import Controls from "../components/controls/Controls.js";
 import { useForm, Form } from "../components/useForm";
 import { verifyCard } from "/components/verifyCard";
-import Header from "../components/Header.js";
 
-const initialFValues = {
-    fullName: "",
-    card: "",
-    expMonth: "",
-    expYear: "",
-    expDate: "",
+const PaymentCard = ({ payment }) => {
+    const verified = verifyCard(payment.card);
+    return (
+        <div className="card">
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                }}
+            >
+                <Image
+                    src={
+                        verified.type === "Visa"
+                            ? "/visaLogo.png"
+                            : "/mastercardLogo.png"
+                    }
+                    width={80}
+                    height={35}
+                />
+            </div>
+            <div>
+                <h1>{payment.fullName}</h1>
+                <h2>{payment.card.substr(payment.card.length - 4)}</h2>
+                <h2>{verified.type}</h2>
+            </div>
+            
+            <style jsx>{`
+                .card {
+                    display: flex;
+                    padding: 10px;
+                    gap: 10px;
+                    background-color: #f7f7f7;
+                }
+
+                .card h1 {
+                    color: #0f1111;
+                    font-weight: 550;
+                    font-size: 20px;
+                    line-height: 6px;
+                }
+
+                .card h2 {
+                    color: #0f1111;
+                    font-weight: 500;
+                    font-size: 17px;
+                    line-height: 5px;
+                }
+
+                .title {
+                    color: #0f1111;
+                    font-weight: 600;
+                    font-size: 30px;
+                    line-height: 36px;
+                }
+            `}</style>
+        </div>
+    );
 };
 
-const FormNewCard = ({ values, handleInputChange, errors, handleSubmit }) => {
+const FormNewCard = ({ values, handleInputChange, errors, userId }) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (validate()) {
+            await fetch(`/api/db/user/payment?userId=${encrypt(userId)}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    payment: values,
+                    operation: "add",
+                }),
+            });
+
+            resetForm();
+        }
+    };
+
     return (
         <Form onSubmit={handleSubmit}>
             <Grid container>
@@ -66,33 +137,51 @@ const FormNewCard = ({ values, handleInputChange, errors, handleSubmit }) => {
                     onChange={handleInputChange}
                     options={[
                         { id: "1", title: "2022" },
-                        { id: "1", title: "2023" },
-                        { id: "1", title: "2024" },
+                        { id: "2", title: "2023" },
+                        { id: "3", title: "2024" },
                     ]}
                     error={errors.expYear}
                 />
             </Grid>
+            <Controls.Button
+                text="Registrarse"
+                color="secondary"
+                onClick={async () => {
+                    await fetch(
+                        `/api/db/user/payment?userId=${encrypt(userId)}`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                payment: values,
+                                operation: "add",
+                            }),
+                        }
+                    );
+                }}
+            />
         </Form>
     );
 };
 
 export default function Home() {
-    const { user, error, isLoading } = useUser();
-    const router = useRouter()
+    const { user, isLoading } = useUser();
+    const [userId, setUserId] = useState(null);
+    const [cards, setCards] = useState([]);
 
-    useEffect(() => {
-        if (!(user || isLoading)) {
-          router.push('/api/auth/login')
-        }
-      }, [user, isLoading])
+    useEffect(async () => {
+        const getData = async () => {
+            const userDb = await (
+                await fetch(`/api/db/user?email=${user?.email}`)
+            ).json();
+            setUserId(userDb?._id);
+            setCards(userDb.payments);
+        };
 
-    const cards = [
-        {
-            name: "Daniel Carmona",
-            type: "Visa",
-            ending: "7136",
-        },
-    ];
+        if (!isLoading) getData();
+    }, [isLoading]);
 
     const initialFValues = {
         fullName: "",
@@ -130,15 +219,6 @@ export default function Home() {
         resetForm,
     } = useForm(initialFValues, true, validate);
 
-    // have to change handle to own service!!
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (validate()) {
-            //employeeService.insertEmployee(values);
-            resetForm();
-        }
-    };
-
     return (
         <div id="root" className="container">
             <Head>
@@ -147,49 +227,18 @@ export default function Home() {
             </Head>
 
             <main>
-                <Header />
-
                 <div className="section">
                     <h1 className="title">Mis Metodos de Pagos</h1>
                     <div className="cards">
-                        {cards.map((card) => {
-                            return (
-                                <div className="card">
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Image
-                                            src={
-                                                card.type === "Visa"
-                                                    ? "/visaLogo.png"
-                                                    : "/mastercardLogo.png"
-                                            }
-                                            width={80}
-                                            height={35}
-                                        />
-                                    </div>
-                                    <div>
-                                        <h1>{card.name}</h1>
-                                        <h2>{card.ending}</h2>
-                                        <h2>{card.type}</h2>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {cards.map((card) => (
+                            <PaymentCard payment={card} />
+                        ))}
                     </div>
                     <FormNewCard
                         values={values}
                         handleInputChange={handleInputChange}
                         errors={errors}
-                        handleSubmit={handleSubmit}
-                    />
-                    <Controls.Button
-                        text="Registrarse"
-                        color="secondary"
-                        onClick={resetForm}
+                        userId={userId}
                     />
                 </div>
             </main>
@@ -205,7 +254,7 @@ export default function Home() {
                     display: flex;
                     flex-direction: column;
                     margin: 20px 0px;
-                    background-color: red;
+                    background-color: #f7f7f7;
                 }
 
                 .card {
@@ -241,6 +290,10 @@ export default function Home() {
                         width: 100%;
                         flex-direction: column;
                     }
+                }
+
+                .section {
+                    height: 88vh;
                 }
             `}</style>
 

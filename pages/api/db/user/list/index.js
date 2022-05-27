@@ -11,7 +11,7 @@ export default async (req, res) => {
     // should change instead of list == 'wishlist' or 'shoppingCart' be ie 0 => wishlist; 1 => shoppingCart
     //console.log('API route /api/db/user/list\nreqs => ' + JSON.stringify(req))
     const { listType } = req.query;
-    const { userId } = decrypt(req.query.userId);
+    const userId = decrypt(req.query.userId);
     const uid = mongoose.Types.ObjectId(userId);
 
     const MongooseUser = mongoose.model('User');
@@ -31,17 +31,17 @@ export default async (req, res) => {
         try {
             if (listType == 'shoppingCart'){
                 if (operation == 'add')
-                    await MongooseUser.updateOne({ _id: uid}, { "$addToSet": { "shoppingCart": productId}});
+                    await MongooseUser.updateOne({ _id: uid}, { "$addToSet": { "shoppingCart": mongoose.Types.ObjectId(productId)}});
                 else if (operation == 'remove')
-                    await MongooseUser.updateOne({ _id: uid}, { "$pull": { "shoppingCart": productId}});
+                    await MongooseUser.updateOne({ _id: uid}, { "$pull": { "shoppingCart": mongoose.Types.ObjectId(productId)}});
                 else
                     console.log('operation not recognized');
             }
             else{
                 if (operation == 'add')
-                await MongooseUser.updateOne({ _id: uid}, { "$addToSet": { "wishlist": productId}});
+                    await MongooseUser.updateOne({ _id: uid}, { "$addToSet": { "wishlist": mongoose.Types.ObjectId(productId)}});
                 else if (operation == 'remove')
-                await MongooseUser.updateOne({ _id: uid}, { "$pull": { "wishlist": productId}});
+                    await MongooseUser.updateOne({ _id: uid}, { "$pull": { "wishlist": mongoose.Types.ObjectId(productId)}});
                 else
                     console.log('operation not recognized');
             }

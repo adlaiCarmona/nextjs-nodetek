@@ -2,29 +2,57 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
+import { Button } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
+import {encrypt} from "../helpers/index.js";
 
-const HistoryItem = (props) => {
+const WishlistItem = ({ item, userId }) => {
     return (
-        <div className="history-item">
+        <div className="wishlist-item">
             <div>
-                <Image src={props.src} width={400} height={400} />
+                <Image src={item.img} width={400} height={400} />
             </div>
-            <div className="history-item-info">
-                <h1>{props.name}</h1>
+            <div className="wishlist-item-info">
+                <h1>{item.name}</h1>
                 <hr />
-                <h2>${props.price}</h2>
-                <h3>{props.description}</h3>
+                <h2>${item.price}</h2>
+                <h3>{item.description}</h3>
+            </div>
+            <div>
+                <div
+                    className="icon"
+                    onClick={async () => {
+                        await fetch(
+                            `/api/db/user/list?listType=wishlist&userId=${encrypt(
+                                userId
+                            )}`,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    productId: item._id,
+                                    operation: "remove",
+                                }),
+                            }
+                        );
+                    }}
+                >
+                    <FontAwesomeIcon icon={faTrashCan} />
+                </div>
             </div>
             <style jsx>
                 {`
-                    .history-item {
+                    .wishlist-item {
                         display: flex;
                         flex-direction: row;
                         gap: 50px;
                     }
 
-                    .history-item-info {
+                    .wishlist-item-info {
                         width: 400px;
                     }
 
@@ -54,7 +82,7 @@ const HistoryItem = (props) => {
 export default function Home() {
     const { user, isLoading } = useUser();
     const [userId, setUserId] = useState(null);
-    const [history, setHistory] = useState([]);
+    const [wishlist, setWishlist] = useState([]);
 
     useEffect(async () => {
         const getData = async () => {
@@ -65,18 +93,15 @@ export default function Home() {
             setUserId(userDb?._id);
             const userCart = [];
 
-                for (const order of userDb.orders) {
-                    // console.log(order);
-                    for (const item of order) {
-                        // console.log(item);
-                        const product = await (
-                            await fetch(`/api/db/product?id=${item}`)
-                        ).json();
-                        userCart.push(product);
-                    }
-                }
+            for (const item of userDb.wishlist) {
+                console.log(item);
+                const product = await (
+                    await fetch(`/api/db/product?id=${item}`)
+                ).json();
+                userCart.push(product);
+            }
 
-            setHistory(userCart);
+            setWishlist(userCart);
         };
 
         if (!isLoading) getData();
@@ -85,32 +110,22 @@ export default function Home() {
     return (
         <div id="root" className="container">
             <Head>
-                <title>Historial</title>
+                <title>Wishlist</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
             <main className="section">
-                <div className="history-cart">
-                    <h1 className="title">Tu Historial</h1>
-                    {history.length === 0 ? (
+                <div className="wishlist-cart">
+                    <h1 className="title">Tu Wishlist</h1>
+                    {wishlist.length === 0 ? (
                         <div>
                             <h2 className="subtitle">
-                                No hay productos en tu historial.
+                                No hay productos en tu wishlist.
                             </h2>
                         </div>
                     ) : (
-                        history.map((item, i) => {
-                            return (
-                                <HistoryItem
-                                    name={item.name}
-                                    description={item.details}
-                                    price={item.price}
-                                    src={item.img}
-                                    userId={userId}
-                                    productId={item._id}
-                                    key={item._id}
-                                />
-                            );
+                        wishlist.map((item, i) => {
+                            return <WishlistItem item={item} userId={userId} />;
                         })
                     )}
                 </div>
@@ -136,7 +151,7 @@ export default function Home() {
                     line-height: 25px;
                 }
 
-                .history-cart {
+                .wishlist-cart {
                     height: 100%;
                     display: flex;
                     flex-direction: column;
@@ -153,7 +168,7 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 88vh;
                 }
             `}</style>
 

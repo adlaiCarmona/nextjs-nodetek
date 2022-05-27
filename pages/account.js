@@ -1,43 +1,76 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { useUser } from "@auth0/nextjs-auth0";
 
-import Header from "../components/Header.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faCartShopping,
+    faClipboardCheck,
+    faMapLocationDot,
+    faCreditCard,
+    faIdCard,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Home() {
-    const { user, error, isLoading } = useUser();
-    const router = useRouter();
+    const { user, isLoading } = useUser();
 
-    useEffect(() => {
-        if (!(user || isLoading)) {
-          router.push('/api/auth/login')
+    useEffect(async () => {
+        if (!isLoading) {
+            console.log("useEffect running product.js");
+            const userDb = await (
+                await fetch(`/api/db/user?email=${user?.email}`)
+            ).json();
         }
-        console.log(`user: ${user}`);
-      }, [user, isLoading])
+    }, [user, isLoading]);
 
     return (
         <div id="root" className="container">
             <Head>
-                <title>Account</title>
+                <title>Cuenta</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
             <main>
-                <Header />
-
                 <div className="section">
                     <div>
                         <h1 className="title">Mi Cuenta</h1>
                     </div>
                     <div className="grid">
-                        <div className="grid-item">Historial de Compras</div>
-                        <div className="grid-item">Mi Wishlist</div>
-                        <div className="grid-item">Mi Dirección</div>
-                        <div className="grid-item">Mis Pagos</div>
-                        <div className="grid-item">Mi Información</div>
+                        <Link href="/cart">
+                            <div className="grid-item">
+                                <div>Mi Carrito</div>
+                                <FontAwesomeIcon icon={faCartShopping} size='4x' />
+                            </div>
+                        </Link>
+                        <Link href="/wishlist">
+                            <div className="grid-item">
+                                <div>Mi Wishlist</div>
+                                <FontAwesomeIcon icon={faClipboardCheck} size='4x' />
+                            </div>
+                        </Link>
+                        <Link href="/location">
+                            <div className="grid-item">
+                                <div>Mis Direcciones</div>
+                                <FontAwesomeIcon icon={faMapLocationDot} size='4x' />
+                            </div>
+                        </Link>
+                        <Link href="/payment">
+                            <div className="grid-item">
+                                <div>
+                                    Mis Metodos de Pagos
+                                </div>
+                                <FontAwesomeIcon icon={faCreditCard} size='4x' />
+                            </div>
+                        </Link>
+                        <Link href="/info">
+                            <div className="grid-item">
+                                <div>Mi Información</div>
+                                <FontAwesomeIcon icon={faIdCard} size='4x' />
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </main>
@@ -65,16 +98,23 @@ export default function Home() {
                 .grid-item {
                     width: 320px;
                     height: 20vh;
+                    display: flex;
                     padding: 15px;
+                    align-items: center;
+                    justify-content: space-evenly;
                     border: 1px solid #d7d7d7;
                     border-radius: 8px;
                     cursor: pointer;
+                    color: #262626;
+                    font-size: 20px;
+                    text-decoration: none;
                 }
 
                 .grid-item:hover,
                 .grid-item:focus,
                 .grid-item:active {
                     background-color: #f7f7f7;
+                    color: #000000;
                 }
 
                 @media (max-width: 600px) {
@@ -82,6 +122,10 @@ export default function Home() {
                         width: 100%;
                         flex-direction: column;
                     }
+                }
+
+                .section {
+                    height: 88vh;
                 }
             `}</style>
 

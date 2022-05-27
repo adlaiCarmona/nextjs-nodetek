@@ -1,33 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
 import { useUser } from "@auth0/nextjs-auth0";
-const CryptoJS = require('crypto-js');
-
-import Header from "../../components/Header.js";
-
-const encrypt = (text) => {
-    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
-};
+import {encrypt} from '../../helpers/index.js'
 
 export default function Home({ product }) {
     const { user, isLoading } = useUser();
-    let userId = null;
+    const [ userId, setUserId] = useState(null);
 
     useEffect(async () => {
         if (!isLoading) {
             console.log("useEffect running product.js");
-            // console.log(`useUser => user = ${JSON.stringify(user)}`);
             const userDb = await (
                 await fetch(`/api/db/user?email=${user?.email}`)
             ).json();
-            // console.log(userDb);
             console.log(`userDb._id = ${userDb?._id}`);
-            userId = userDb?._id;
+            setUserId(userDb._id);
         }
     }, [user, isLoading]);
-
+/*
     let info = {
         name: "Raspberry Pi 4",
         details:
@@ -36,7 +28,7 @@ export default function Home({ product }) {
         price: 50,
         id: "627efc79d3d7d85f5f62aa7e",
     };
-
+*/
     return (
         <div id="root" className="container">
             <Head>
@@ -44,10 +36,8 @@ export default function Home({ product }) {
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <Header />
-
-                <div className="container">
+            <main className="section">
+                <div>
                     <div className="product">
                         <div className="image">
                             <Image src={product.img} width={400} height={360} />
@@ -100,7 +90,7 @@ export default function Home({ product }) {
                                 Wishlist
                             </div>
 
-                            <h3>{product.details}</h3>
+                            <h3>{product.description}</h3>
                         </div>
                     </div>
                 </div>
@@ -179,6 +169,10 @@ export default function Home({ product }) {
                         width: 100%;
                         flex-direction: column;
                     }
+                }
+
+                .section {
+                    min-height: 88vh;
                 }
             `}</style>
 

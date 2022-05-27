@@ -6,13 +6,7 @@ import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
-const CryptoJS = require('crypto-js');
-
-import Header from "../components/Header.js";
-
-const encrypt = (text) => {
-    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
-};
+import {encrypt} from '../helpers/index.js'
 
 const ShoppingItem = (props) => {
 
@@ -121,8 +115,6 @@ export default function Home() {
             </Head>
 
             <main>
-                <Header />
-
                 <div className="shopping-cart">
                     <h1 className="title">Tu Carrito</h1>
                     {shoppingCart.length === 0 ? (
@@ -171,6 +163,7 @@ export default function Home() {
                 }
 
                 .shopping-cart {
+                    height: 100%;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -183,6 +176,10 @@ export default function Home() {
                         width: 100%;
                         flex-direction: column;
                     }
+                }
+
+                .section {
+                    height: 88vh;
                 }
             `}</style>
 

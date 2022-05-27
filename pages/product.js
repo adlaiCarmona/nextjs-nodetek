@@ -4,8 +4,6 @@ import Image from "next/image";
 
 import { useUser } from "@auth0/nextjs-auth0";
 
-import Header from "../components/Header.js";
-
 export default function Home() {
     const { user, isLoading } = useUser();
     let userId = null;
@@ -40,7 +38,6 @@ export default function Home() {
             </Head>
 
             <main>
-                <Header />
 
                 <div className="container">
                     <div className="product">

@@ -19,6 +19,7 @@ const SearchBar = styled(Input)({
 
 const Header = () => {
     const { user, error, isLoading } = useUser();
+    const [search, setSearch] = useState("");
 
     if (error) console.log(error.message);
 
@@ -29,8 +30,8 @@ const Header = () => {
                     <a>
                         <Image
                             src="/NodetekNameWY.png"
-                            width={170}
-                            height={35}
+                            width={200}
+                            height={40}
                             quality={100}
                         />
                     </a>
@@ -38,8 +39,13 @@ const Header = () => {
             </div>
 
             <div className="search-bar">
-                <SearchBar disableUnderline={true} />
-                <Link href="/product">
+                <SearchBar
+                    disableUnderline={true}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                    }}
+                />
+                <Link href={`/search?q=${search}`}>
                     <div className="search-button">
                         <FontAwesomeIcon icon={faMagnifyingGlass} />
                     </div>
@@ -64,7 +70,7 @@ const Header = () => {
 
             <style jsx>{`
                 .container {
-                    height: 60px;
+                    height: 65px;
                     padding: 0.2rem 0.5rem;
                     display: flex;
                     flex-direction: row;

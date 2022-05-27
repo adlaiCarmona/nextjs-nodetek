@@ -24,30 +24,54 @@ const Header = () => {
 
     return (
         <div id="footer" className="container">
-            <div id="contact" className="contact-info">
-                <h3>Contacto:</h3>
-                <p>E-mail: support@nodetek.com</p>
-                <p>Phone: (+52) 123-456-789</p>
-                <p>Dirección: Alta Brisa, Tj., B.C.</p>
+            <div className="recommendation">
+            
+            </div>
+            <div className="info">
+                <div id="categories" className="contact-info">
+                    <h3>Categorías:</h3>
+                    <p>Audio</p>
+                    <p>Computación</p>
+                    <p>Herramientas</p>
+                    <p>Cables</p>
+                </div>
+                <div id="contact" className="contact-info">
+                    <h3>Contacto:</h3>
+                    <p>E-mail: support@nodetek.com</p>
+                    <p>Phone: (+52) 123-456-789</p>
+                    <p>Dirección: Alta Brisa, Tj., B.C.</p>
+                </div>
+                <div id="location" className="contact-info">
+                    <h3>Ubicación:</h3>
+                    <p>Calz. del Tecnológico 14102,</p>
+                    <p>Alta Brisa, Tj., B.C.</p>
+                </div>
             </div>
 
             <style jsx>{`
                 .container {
-                    padding: 0.2rem 0.5rem;
-                    background-color: #255075;
                     color: #fff;
                     font-size: 16px;
                 }
 
-                .contact-info{
+                .info {
+                    padding: 0.2rem 0.5rem;
+                    background-color: #255075;
+                    display: flex;
+                    justify-content: center;
+                    gap: 15vw;
+                }
+
+                .contact-info {
                     text-align: center;
-                    line-height: 1;
+                    line-height: .6;
                 }
 
                 .contact-info p:hover,
                 .contact-info p:focus,
                 .contact-info p:active {
                     color: #ff0;
+                    cursor: pointer;
                 }
             `}</style>
         </div>

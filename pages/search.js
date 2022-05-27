@@ -6,6 +6,8 @@ import Link from "next/link";
 
 import { useUser } from "@auth0/nextjs-auth0";
 
+import { TextAndBox } from '../components/MySkeleton'
+
 const Product = ({ product }) => {
     function truncateText(text, length) {
         if (text.length <= length) {
@@ -20,22 +22,18 @@ const Product = ({ product }) => {
                 <a>
                     <div className="divided">
                         <div className="image">
-                            <Image src={product.img} width={300} height={270} />
+                            <Image src={product.img} width={270} height={230} />
                         </div>
                         <div className="info">
                             <h1 className="title">{product.name}</h1>
                             <h2 className="price">$ {product.price}</h2>
-                            <p className="description">{product.description}</p>
-                            {false && <p className="description">{truncateText(product.description, 75)}</p>}
+                            <p className="description">{truncateText(product.description, 280)}</p>
                         </div>
                     </div>
                 </a>
             </Link>
             <style jsx>{`
                 .grid-item {
-                    width: 85vw;
-                    height: 45vh;
-                    margin: 15px;
                     border-radius: 8px;
                     cursor: pointer;
                 }
@@ -52,8 +50,7 @@ const Product = ({ product }) => {
 
                 .divided{
                     display: flex;
-                    flex-grow: none;
-                    gap: 10px;
+                    gap: 1.5rem;
                 }
 
                 .title {
@@ -70,7 +67,7 @@ const Product = ({ product }) => {
                 }
                 .description {
                     color: #0f1111;
-                    font-weight: 600;
+                    font-weight: 500;
                     font-size: 20;
                     line-height: 22px;
                 }
@@ -87,6 +84,7 @@ const Product = ({ product }) => {
 
 export default function Home() {
     const { user, isLoading } = useUser();
+    const [ isFetched, setIsFetched ] = useState(false);
     const [allProducts, setAllProducts] = useState([]);
     const router = useRouter();
     const { q } = router.query;
@@ -107,20 +105,22 @@ export default function Home() {
                         product.description.toLowerCase().includes(q)
                 )
             );
+            setIsFetched(true);
         }
     }, [user, isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>{q}</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
+            <main className="section">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <div>
                         <h1 className="title">Resultados</h1>
+                        <p>({allProducts.length} productos encontrados)</p>
                     </div>
                     { allProducts.length > 0 &&
                     <div className="grid">
@@ -132,20 +132,15 @@ export default function Home() {
                     <div className="grid">
                         No se encontraron resultados
                     </div>}
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 .title {
                     color: #0f1111;
                     font-weight: 600;
                     font-size: 30px;
-                    line-height: 36px;
+                    line-height: 34px;
                 }
 
                 .grid {
@@ -164,7 +159,23 @@ export default function Home() {
                 }
 
                 .section {
-                    min-height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

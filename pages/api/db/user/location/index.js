@@ -28,7 +28,7 @@ export default async (req, res) => {
         res.status(200).json(userLocations);
     } else if (req.method === "POST") {
         const { operation, location } = req.body;
-        console.log(`POST API /db/user/location => location = ${location}`)
+        console.log(`POST API /db/user/location => location = ${JSON.stringify(location)}`)
 
         try {
             if (operation == "add")
@@ -36,7 +36,7 @@ export default async (req, res) => {
                     { _id: uid },
                     { $addToSet: { locations: location } }
                 );
-            else if (operation == "remove")
+            else if (operation == "remove") // doesnt removes
                 await MongooseUser.updateOne(
                     { _id: uid },
                     { $pull: { locations: location } }

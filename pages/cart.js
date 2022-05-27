@@ -6,14 +6,14 @@ import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
-import {encrypt} from '../helpers/index.js'
+import { encrypt } from "../helpers/index.js";
+import { TextAndBox } from '../components/MySkeleton'
 
 const ShoppingItem = (props) => {
-
     return (
         <div className="shopping-item">
             <div>
-                <Image src={props.src} width={400} height={400} />
+                <Image src={props.src} width={300} height={300} />
             </div>
             <div className="shopping-item-info">
                 <h1>{props.name}</h1>
@@ -28,7 +28,9 @@ const ShoppingItem = (props) => {
                         // console.log(`userId not encrypted ${props.userId}\nuserId encrypted ${encrypt(props.userId)}`)
                         if (props.userId)
                             await fetch(
-                                `/api/db/user/list?listType=shoppingCart&userId=${encrypt(props.userId)}`,
+                                `/api/db/user/list?listType=shoppingCart&userId=${encrypt(
+                                    props.userId
+                                )}`,
                                 {
                                     method: "POST",
                                     headers: {
@@ -40,7 +42,6 @@ const ShoppingItem = (props) => {
                                     }),
                                 }
                             );
-                            
                     }}
                 >
                     <FontAwesomeIcon icon={faTrashCan} />
@@ -52,6 +53,9 @@ const ShoppingItem = (props) => {
                         display: flex;
                         flex-direction: row;
                         gap: 50px;
+                        border-radius: 20px;
+                        border: 1px solid #d7d7d7;
+                        padding: 2rem;
                     }
 
                     .shopping-item-info {
@@ -85,6 +89,7 @@ export default function Home() {
     const { user, isLoading } = useUser();
     const [userId, setUserId] = useState(null);
     const [shoppingCart, setShoppingCart] = useState([]);
+    const [ isFetched, setIsFetched ] = useState(false);
 
     useEffect(async () => {
         const getData = async () => {
@@ -102,20 +107,21 @@ export default function Home() {
             }
 
             setShoppingCart(userCart);
+            setIsFetched(true);
         };
 
         if (!isLoading) getData();
     }, [isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Carrito</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="shopping-cart">
+            <main className="section">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <h1 className="title">Tu Carrito</h1>
                     {shoppingCart.length === 0 ? (
                         <div>
@@ -139,7 +145,7 @@ export default function Home() {
                         })
                     )}
                     <Button>Pagar</Button>
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
@@ -162,15 +168,6 @@ export default function Home() {
                     line-height: 25px;
                 }
 
-                .shopping-cart {
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 @media (max-width: 600px) {
                     .grid {
                         width: 100%;
@@ -179,7 +176,24 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 4rem 0px;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

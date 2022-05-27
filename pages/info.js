@@ -3,18 +3,49 @@ import Head from "next/head";
 
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { useUser } from "@auth0/nextjs-auth0";
-import { styled, Button, Box, MenuItem, Select, TextField } from "@mui/material";
+import {
+    Box,
+    TextField,
+} from "@mui/material";
 
-import {encrypt} from '../helpers/index.js'
+import { encrypt } from "../helpers/index.js";
+import { TextAndBox } from '../components/MySkeleton'
 
 const ModifyProduct = ({ info }) => {
-    const [modifyInfo, setModifyInfo] = useState({fullName:info.fullName, email:info.email});
+    const [modifyInfo, setModifyInfo] = useState({
+        fullName: info.fullName,
+        email: info.email,
+    });
     console.log(modifyInfo);
 
     return (
         <div id="modifyProduct" className="container">
-            <hr />
-            <h2 className="title">Modificar Información</h2>
+            <div className="flex-row">
+                <h2 className="title">Modificar Información</h2>
+                <div
+                    id="saveProduct"
+                    className="addProduct"
+                    onClick={async () => {
+                        console.log(modifyInfo);
+                        if (true)
+                            await fetch(
+                                `/api/db/user?userId=${encrypt(info._id)}`,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        newUser: modifyInfo,
+                                        operation: "update",
+                                    }),
+                                }
+                            );
+                    }}
+                >
+                    Guardar
+                </div>
+            </div>
             <Box
                 component="form"
                 sx={{
@@ -54,29 +85,15 @@ const ModifyProduct = ({ info }) => {
                     }}
                 />
             </Box>
-            <div
-                id="saveProduct"
-                className="addProduct"
-                onClick={async () => {
-                    console.log(modifyInfo);
-                    if (true)
-                        await fetch(`/api/db/user?userId=${encrypt(info._id)}`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                newUser: modifyInfo,
-                                operation: "update",
-                            }),
-                        });
-                }}
-            >
-                Guardar
-            </div>
+
             <style jsx>{`
-                .container{
-                    padding: 10px;
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    border-radius: 20px;
+                    border: 1px solid #d7d7d7;
+                    padding: 2rem;
                 }
 
                 .title {
@@ -102,6 +119,12 @@ const ModifyProduct = ({ info }) => {
                 .addProduct:active {
                     background-color: #f7ca00;
                 }
+
+                .flex-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
             `}</style>
         </div>
     );
@@ -109,7 +132,8 @@ const ModifyProduct = ({ info }) => {
 
 export default function Home() {
     const { user, isLoading } = useUser();
-    const [ info, setInfo ] = useState({});
+    const [info, setInfo] = useState({});
+    const [ isFetched, setIsFetched ] = useState(false);
 
     useEffect(async () => {
         if (!isLoading) {
@@ -117,29 +141,25 @@ export default function Home() {
                 await fetch(`/api/db/user?email=${user?.email}`)
             ).json();
             setInfo(userDb);
+            setIsFetched(true);
         }
     }, [user, isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Info</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
+            <main className="section">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <h1 className="title">Información</h1>
                     <ModifyProduct info={info} />
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 .title {
                     color: #0f1111;
                     font-weight: 600;
@@ -193,7 +213,23 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

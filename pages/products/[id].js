@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useUser } from "@auth0/nextjs-auth0";
 import {encrypt} from '../../helpers/index.js'
 
+// can add snackbar from mui to pop up when added to cart or wishlist
+
 export default function Home({ product }) {
     const { user, isLoading } = useUser();
     const [ userId, setUserId] = useState(null);
@@ -120,7 +122,12 @@ export default function Home({ product }) {
                 .product {
                     display: flex;
                     justify-content: center;
+                    max-width: fit-content;
                     gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
 
                 .details {
@@ -172,7 +179,11 @@ export default function Home({ product }) {
                 }
 
                 .section {
-                    min-height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 2rem;
                 }
             `}</style>
 
@@ -223,11 +234,11 @@ export async function getStaticProps({ params }) {
     const product = await (
         await fetch(`http://localhost:3000/api/db/product?id=${params.id}`)
     ).json();
-    console.log(
-        `product from /api/db/product?id=${params.id} =>\n${JSON.stringify(
-            product
-        )}`
-    );
+    // console.log(
+    //     `product from /api/db/product?id=${params.id} =>\n${JSON.stringify(
+    //         product
+    //     )}`
+    // );
 
     // Pass post data to the page via props
     return { props: { product } };

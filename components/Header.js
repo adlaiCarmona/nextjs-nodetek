@@ -70,7 +70,7 @@ const Header = () => {
 
             <style jsx>{`
                 .container {
-                    height: 65px;
+                    height: 10vh;
                     padding: 0.2rem 0.5rem;
                     display: flex;
                     flex-direction: row;

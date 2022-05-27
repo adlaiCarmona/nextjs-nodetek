@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 
-import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
 import {encrypt} from "../helpers/index.js";
+import { TextAndBox } from '../components/MySkeleton'
 
 const WishlistItem = ({ item, userId }) => {
     return (
         <div className="wishlist-item">
             <div>
-                <Image src={item.img} width={400} height={400} />
+                <Image src={item.img} width={300} height={300} />
             </div>
             <div className="wishlist-item-info">
                 <h1>{item.name}</h1>
@@ -50,6 +50,9 @@ const WishlistItem = ({ item, userId }) => {
                         display: flex;
                         flex-direction: row;
                         gap: 50px;
+                        border-radius: 20px;
+                        border: 1px solid #d7d7d7;
+                        padding: 2rem;
                     }
 
                     .wishlist-item-info {
@@ -83,6 +86,7 @@ export default function Home() {
     const { user, isLoading } = useUser();
     const [userId, setUserId] = useState(null);
     const [wishlist, setWishlist] = useState([]);
+    const [ isFetched, setIsFetched ] = useState(false);
 
     useEffect(async () => {
         const getData = async () => {
@@ -102,20 +106,21 @@ export default function Home() {
             }
 
             setWishlist(userCart);
+            setIsFetched(true);
         };
 
         if (!isLoading) getData();
     }, [isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Wishlist</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
             <main className="section">
-                <div className="wishlist-cart">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <h1 className="title">Tu Wishlist</h1>
                     {wishlist.length === 0 ? (
                         <div>
@@ -128,7 +133,7 @@ export default function Home() {
                             return <WishlistItem item={item} userId={userId} />;
                         })
                     )}
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
@@ -168,7 +173,24 @@ export default function Home() {
                 }
 
                 .section {
-                    min-height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 4rem 0px;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

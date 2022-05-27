@@ -5,93 +5,69 @@ import Link from "next/link";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 
-export default function Home() {
+const CarouselItem = ({ item }) => {
     return (
-        <div id="root" className="container">
+        <Link href={item.link}>
+            <div className="product">
+                <Image
+                    src={item.img}
+                    width={300}
+                    height={300}
+                    quality={100}
+                />
+                <div>
+                    <h1>{item.name}</h1>
+                    <h3>$ {item.price}</h3>
+                </div>
+            </div>
+        </Link>
+    );
+};
+
+export default function Home() {
+    const items = [
+        {
+            name: 'Arduino Uno',
+            img: '/arduinoUno.jpg',
+            price: 350,
+            link: '/products/6281237a2799a031378aeaef'
+        },
+        {
+            name: 'Arduino Mega',
+            img: '/arduinoMega.jpg',
+            price: 20,
+            link: '/products/6281237a2799a031378aeaef'
+        },
+        {
+            name: 'Arduino Nano',
+            img: '/arduinoNano.png',
+            price: 15,
+            link: '/products/6281237a2799a031378aeaef'
+        },
+        {
+            name: 'Raspberry Pi 4',
+            img: '/raspberryPi4.jpg',
+            price: 50,
+            link: '/products/627efc79d3d7d85f5f62aa7e'
+        },
+    ]
+    return (
+        <div id="root">
             <Head>
                 <title>NodeTek</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
             <main className="section">
-                <Carousel
-                    showThumbs={false}
-                    showStatus={false}
-                    infiniteLoop={true}
-                >
-                    <Link href="/products/6281237a2799a031378aeaef">
-                        <div className="product">
-                            <Image
-                                src="/arduinoUno.jpg"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Arduino Uno</h1>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="">
-                        <div className="product">
-                            <Image
-                                src="/arduinoMega.jpg"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Arduino Mega</h1>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="">
-                        <div className="product">
-                            <Image
-                                src="/arduinoNano.png"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Arduino Nano</h1>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/products/627efc79d3d7d85f5f62aa7e">
-                        <div className="product">
-                            <Image
-                                src="/raspberryPi4.jpg"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Raspberry Pi 4</h1>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="">
-                        <div className="product">
-                            <Image
-                                src="/raspberryPiPico.jpg"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Raspberry Pi Pico</h1>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="">
-                        <div className="product">
-                            <Image
-                                src="/raspberryPiZero.jpg"
-                                width={250}
-                                height={250}
-                            />
-                            <div>
-                                <h1>Raspberry Pi Zero</h1>
-                            </div>
-                        </div>
-                    </Link>
-                </Carousel>
+                <div className="container">
+                    <Carousel
+                        showThumbs={false}
+                        showStatus={false}
+                        infiniteLoop={true}
+                    >
+                        {items.map(item => <CarouselItem item={item} />)}
+                    </Carousel>
+                </div>
             </main>
 
             <style jsx>{`
@@ -167,12 +143,6 @@ export default function Home() {
                     line-height: 1.5;
                 }
 
-                .product {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                }
-
                 @media (max-width: 600px) {
                     .grid {
                         width: 100%;
@@ -181,7 +151,23 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    justify-content: center;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

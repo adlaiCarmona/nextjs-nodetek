@@ -9,14 +9,14 @@ import {
     Box,
     Button,
     MenuItem,
-    Modal,
     Select,
     TextField,
 } from "@mui/material";
 
-import {encrypt} from '../helpers/index.js'
+import { encrypt } from "../helpers/index.js";
+import { TextAndBox } from '../components/MySkeleton'
 
-const LocationCard = ({location}) => {
+const LocationCard = ({ location, userId }) => {
     return (
         <div className="card">
             <div>
@@ -28,37 +28,25 @@ const LocationCard = ({location}) => {
                 <Button>Editar</Button>
                 <Button
                     onClick={async () => {
-                        console.log(modifyProduct);
-                        if (true)
-                            await fetch(`/api/db/user/location?userId=${encrypt(userId)}`, {
+                        await fetch(
+                            `/api/db/user/location?userId=${encrypt(userId)}`,
+                            {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
                                 },
                                 body: JSON.stringify({
-                                    newProduct: modifyProduct,
+                                    location: {location},
                                     operation: "remove",
                                 }),
-                            });
+                            }
+                        );
                     }}
                 >
                     Borrar
                 </Button>
             </div>
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
-                .cards {
-                    width: 300px;
-                    display: flex;
-                    flex-direction: column;
-                    margin: 20px 0px;
-                    background-color: red;
-                }
-
                 .card {
                     display: flex;
                     padding: 10px;
@@ -86,7 +74,7 @@ const LocationCard = ({location}) => {
 
 // Falta validacion de la meta 3.7
 
-const FormNewLocation = ({userId}) => {
+const FormNewLocation = ({ userId }) => {
     const [newLocation, setNewLocation] = useState({
         name: "",
         country: "",
@@ -119,9 +107,9 @@ const FormNewLocation = ({userId}) => {
                     setNewLocation({ ...newLocation, country: e.target.value })
                 }
             >
-                <MenuItem value={1}>México</MenuItem>
-                <MenuItem value={2}>Estados Unidos</MenuItem>
-                <MenuItem value={3}>Colombia</MenuItem>
+                <MenuItem value="México">México</MenuItem>
+                <MenuItem value="Estados Unidos">Estados Unidos</MenuItem>
+                <MenuItem value="Colombia">Colombia</MenuItem>
             </Select>
             <TextField
                 required
@@ -161,16 +149,19 @@ const FormNewLocation = ({userId}) => {
                     console.log(newLocation);
                     console.log(encrypt(userId));
                     if (true)
-                        await fetch(`/api/db/user/location?userId=${encrypt(userId)}`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                location: newLocation,
-                                operation: "add",
-                            }),
-                        });
+                        await fetch(
+                            `/api/db/user/location?userId=${encrypt(userId)}`,
+                            {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    location: newLocation,
+                                    operation: "add",
+                                }),
+                            }
+                        );
                 }}
             >
                 Agregar
@@ -183,6 +174,7 @@ export default function Home() {
     const { user, isLoading } = useUser();
     const [userId, setUserId] = useState(null);
     const [locations, setLocations] = useState([]);
+    const [ isFetched, setIsFetched ] = useState(false);
 
     useEffect(async () => {
         const getData = async () => {
@@ -191,20 +183,21 @@ export default function Home() {
             ).json();
             setUserId(userDb?._id);
             setLocations(userDb.locations);
+            setIsFetched(true);
         };
 
         if (!isLoading) getData();
     }, [isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Account</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
+            <main className="section">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <h1 className="title">Mis Direcciones</h1>
                     <div className="cards">
                         {locations.map((location) => (
@@ -212,42 +205,13 @@ export default function Home() {
                         ))}
                     </div>
                     <FormNewLocation userId={userId} />
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 .cards {
-                    width: 300px;
                     display: flex;
-                    flex-direction: column;
-                    margin: 20px 0px;
-                    background-color: red;
-                }
-
-                .card {
-                    display: flex;
-                    padding: 10px;
-                    gap: 10px;
-                    background-color: #f7f7f7;
-                }
-
-                .card h1 {
-                    color: #0f1111;
-                    font-weight: 550;
-                    font-size: 20px;
-                    line-height: 6px;
-                }
-
-                .card h2 {
-                    color: #0f1111;
-                    font-weight: 500;
-                    font-size: 17px;
-                    line-height: 5px;
+                    flex-direction: row;
                 }
 
                 .title {
@@ -265,7 +229,23 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

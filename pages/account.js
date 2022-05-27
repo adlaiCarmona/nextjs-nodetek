@@ -12,10 +12,15 @@ import {
     faMapLocationDot,
     faCreditCard,
     faIdCard,
+    faToolbox,
 } from "@fortawesome/free-solid-svg-icons";
+
+import { TextAndBox } from '../components/MySkeleton'
 
 export default function Home() {
     const { user, isLoading } = useUser();
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [ isFetched, setIsFetched ] = useState(false);
 
     useEffect(async () => {
         if (!isLoading) {
@@ -23,18 +28,20 @@ export default function Home() {
             const userDb = await (
                 await fetch(`/api/db/user?email=${user?.email}`)
             ).json();
+            setIsAdmin(userDb.isAdmin);
+            setIsFetched(true);
         }
     }, [user, isLoading]);
 
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Cuenta</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
+            <main className="section">
+                {!isFetched? <TextAndBox/>:<div className="container">
                     <div>
                         <h1 className="title">Mi Cuenta</h1>
                     </div>
@@ -42,45 +49,61 @@ export default function Home() {
                         <Link href="/cart">
                             <div className="grid-item">
                                 <div>Mi Carrito</div>
-                                <FontAwesomeIcon icon={faCartShopping} size='4x' />
+                                <FontAwesomeIcon
+                                    icon={faCartShopping}
+                                    size="4x"
+                                />
                             </div>
                         </Link>
                         <Link href="/wishlist">
                             <div className="grid-item">
                                 <div>Mi Wishlist</div>
-                                <FontAwesomeIcon icon={faClipboardCheck} size='4x' />
+                                <FontAwesomeIcon
+                                    icon={faClipboardCheck}
+                                    size="4x"
+                                />
                             </div>
                         </Link>
                         <Link href="/location">
                             <div className="grid-item">
                                 <div>Mis Direcciones</div>
-                                <FontAwesomeIcon icon={faMapLocationDot} size='4x' />
+                                <FontAwesomeIcon
+                                    icon={faMapLocationDot}
+                                    size="4x"
+                                />
                             </div>
                         </Link>
                         <Link href="/payment">
                             <div className="grid-item">
-                                <div>
-                                    Mis Metodos de Pagos
-                                </div>
-                                <FontAwesomeIcon icon={faCreditCard} size='4x' />
+                                <div>Mis Metodos de Pagos</div>
+                                <FontAwesomeIcon
+                                    icon={faCreditCard}
+                                    size="4x"
+                                />
                             </div>
                         </Link>
                         <Link href="/info">
                             <div className="grid-item">
                                 <div>Mi Información</div>
-                                <FontAwesomeIcon icon={faIdCard} size='4x' />
+                                <FontAwesomeIcon icon={faIdCard} size="4x" />
                             </div>
                         </Link>
+                        {isAdmin && (
+                            <Link href="/admin">
+                                <div className="grid-item">
+                                    <div>Administración</div>
+                                    <FontAwesomeIcon
+                                        icon={faToolbox}
+                                        size="4x"
+                                    />
+                                </div>
+                            </Link>
+                        )}
                     </div>
-                </div>
+                </div>}
             </main>
 
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 .title {
                     color: #0f1111;
                     font-weight: 600;
@@ -125,7 +148,24 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 2rem 0px;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    margin: 2rem 8rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

@@ -4,18 +4,20 @@ import { useRouter } from "next/router";
 
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { useUser } from "@auth0/nextjs-auth0";
-import { styled, Button, Box, MenuItem, Select, TextField } from "@mui/material";
+import { Box, MenuItem, Select, TextField } from "@mui/material";
+
+import { TextAndBox } from "../components/MySkeleton";
 
 const NotAdmin = () => {
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Admin</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
+            <main className="section">
+                <div className="container">
                     <div>
                         <h1 className="title">No eres Administrador</h1>
                     </div>
@@ -24,8 +26,23 @@ const NotAdmin = () => {
 
             <style jsx>{`
                 .section {
-                    max-width: 1000px;
-                    margin: auto;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
 
                 .title {
@@ -72,8 +89,29 @@ const AddProduct = () => {
 
     return (
         <div id="addProduct" className="container">
-            <hr />
-            <h2 className="title">Añadir Producto</h2>
+            <div className="flex-row">
+                <h2 className="title">Añadir Producto</h2>
+                <div
+                    id="addProduct"
+                    className="addProduct"
+                    onClick={async () => {
+                        console.log(newProduct);
+                        if (true)
+                            await fetch(`/api/db/product`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    newProduct: newProduct,
+                                    operation: "add",
+                                }),
+                            });
+                    }}
+                >
+                    Add
+                </div>
+            </div>
             <Box
                 component="form"
                 sx={{
@@ -147,29 +185,16 @@ const AddProduct = () => {
                     }}
                 />
             </Box>
-            <div
-                id="addProduct"
-                className="addProduct"
-                onClick={async () => {
-                    console.log(newProduct);
-                    if (true)
-                        await fetch(`/api/db/product`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                newProduct: newProduct,
-                                operation: "add",
-                            }),
-                        });
-                }}
-            >
-                Add
-            </div>
+
             <style jsx>{`
-                .container{
-                    padding: 10px;
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    border-radius: 20px;
+                    border: 1px solid #d7d7d7;
+                    padding: 2rem;
                 }
 
                 .title {
@@ -180,10 +205,8 @@ const AddProduct = () => {
                 }
 
                 .addProduct {
-                    width: 125px;
-                    height: 30px;
-                    padding: auto;
-                    text-align: center;
+                    padding: 0.6rem 2.5rem;
+                    height: fit-content;
                     border: 1px solid #d7d7d7;
                     border-radius: 8px;
                     background-color: #ffd814;
@@ -195,6 +218,12 @@ const AddProduct = () => {
                 .addProduct:active {
                     background-color: #f7ca00;
                 }
+
+                .flex-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
             `}</style>
         </div>
     );
@@ -202,12 +231,33 @@ const AddProduct = () => {
 
 const ModifyProduct = ({ products }) => {
     const [modifyProduct, setModifyProduct] = useState({});
-    const [productId, setProductId] = useState('');
+    const [productId, setProductId] = useState("");
 
     return (
         <div id="modifyProduct" className="container">
-            <hr />
-            <h2 className="title">Modificar Producto</h2>
+            <div className="flex-row">
+                <h2 className="title">Modificar Producto</h2>
+                <div
+                    id="saveProduct"
+                    className="addProduct"
+                    onClick={async () => {
+                        console.log(modifyProduct);
+                        if (true)
+                            await fetch(`/api/db/product`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    newProduct: modifyProduct,
+                                    operation: "update",
+                                }),
+                            });
+                    }}
+                >
+                    Guardar
+                </div>
+            </div>
             <Box
                 component="form"
                 sx={{
@@ -221,14 +271,18 @@ const ModifyProduct = ({ products }) => {
                     id="select-product"
                     value={productId}
                     onChange={(e) => {
-                        setModifyProduct(products.find(product => product._id == e.target.value));
+                        setModifyProduct(
+                            products.find(
+                                (product) => product._id == e.target.value
+                            )
+                        );
                         setProductId(modifyProduct.name);
                     }}
                     label="Producto"
                 >
-                    {
-                        products.map((product) => (<MenuItem value={product._id}>{product.name}</MenuItem>))
-                    }
+                    {products.map((product) => (
+                        <MenuItem value={product._id}>{product.name}</MenuItem>
+                    ))}
                 </Select>
                 <TextField
                     required
@@ -287,29 +341,15 @@ const ModifyProduct = ({ products }) => {
                     }}
                 />
             </Box>
-            <div
-                id="saveProduct"
-                className="addProduct"
-                onClick={async () => {
-                    console.log(modifyProduct);
-                    if (true)
-                        await fetch(`/api/db/product`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                newProduct: modifyProduct,
-                                operation: "update",
-                            }),
-                        });
-                }}
-            >
-                Save
-            </div>
+
             <style jsx>{`
-                .container{
-                    padding: 10px;
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    border-radius: 20px;
+                    border: 1px solid #d7d7d7;
+                    padding: 2rem;
                 }
 
                 .title {
@@ -320,10 +360,8 @@ const ModifyProduct = ({ products }) => {
                 }
 
                 .addProduct {
-                    width: 125px;
-                    height: 30px;
-                    padding: auto;
-                    text-align: center;
+                    padding: 0.6rem 2.5rem;
+                    height: fit-content;
                     border: 1px solid #d7d7d7;
                     border-radius: 8px;
                     background-color: #ffd814;
@@ -335,6 +373,12 @@ const ModifyProduct = ({ products }) => {
                 .addProduct:active {
                     background-color: #f7ca00;
                 }
+
+                .flex-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
             `}</style>
         </div>
     );
@@ -344,7 +388,7 @@ export default function Home() {
     const { user, isLoading } = useUser();
     const [isAdmin, setIsAdmin] = useState(false);
     const [allProducts, setAllProducts] = useState([]);
-    const router = useRouter();
+    const [isFetched, setIsFetched] = useState(false);
 
     useEffect(async () => {
         if (!isLoading) {
@@ -355,32 +399,32 @@ export default function Home() {
             console.log(productsDb);
             setIsAdmin(userDb?.isAdmin);
             setAllProducts(productsDb);
+            setIsFetched(true);
         }
     }, [user, isLoading]);
 
-    if (!isAdmin) return <NotAdmin />;
-
     return (
-        <div id="root" className="container">
+        <div id="root">
             <Head>
                 <title>Admin</title>
                 <link rel="icon" href="/nodetek.ico" />
             </Head>
 
-            <main>
-                <div className="section">
-                    <h1 className="title">Admin</h1>
-                    <ModifyProduct products={allProducts} />
-                    <AddProduct />
-                </div>
+            <main className="section">
+                {!isFetched ? (
+                    <TextAndBox />
+                ) : !isAdmin ? (
+                    <NotAdmin />
+                ) : (
+                    <div className="container">
+                        <h1 className="title">Administración</h1>
+                        <ModifyProduct products={allProducts} />
+                        <AddProduct />
+                    </div>
+                )}
             </main>
 
             <style jsx>{`
-                .section {
-                    max-width: 1000px;
-                    margin: auto;
-                }
-
                 .title {
                     color: #0f1111;
                     font-weight: 600;
@@ -434,7 +478,23 @@ export default function Home() {
                 }
 
                 .section {
-                    height: 88vh;
+                    min-height: 90vh;
+                    display: flex;
+                    justify-content: center;
+                    background-color: #d8d8d8;
+                    padding: 1.5rem 4rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    max-width: fit-content;
+                    gap: 20px;
+                    background-color: #ffffff;
+                    border-radius: 20px;
+                    padding: 2rem;
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+                        0 6px 20px 0 rgba(0, 0, 0, 0.19);
                 }
             `}</style>
 

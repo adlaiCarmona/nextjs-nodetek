@@ -8,7 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 const CarouselItem = ({ item }) => {
     return (
         <Link href={item.link}>
-            <div className="product">
+            <a>
                 <Image
                     src={item.img}
                     width={300}
@@ -19,7 +19,13 @@ const CarouselItem = ({ item }) => {
                     <h1>{item.name}</h1>
                     <h3>$ {item.price}</h3>
                 </div>
-            </div>
+            <style jsx>{`
+                a {
+                    color: inherit;
+                    text-decoration: none;
+                }
+            `}</style>
+            </a>
         </Link>
     );
 };

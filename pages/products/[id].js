@@ -47,7 +47,7 @@ export default function Home({ product }) {
                         <div className="details">
                             <h1>{product.name}</h1>
                             <h2>${product.price}</h2>
-                            <div
+                            <button
                                 className="button-buy"
                                 onClick={async () => {
                                     if (userId)
@@ -68,8 +68,8 @@ export default function Home({ product }) {
                                 }}
                             >
                                 Comprar
-                            </div>
-                            <div
+                            </button>
+                            <button
                                 className="button-wishlist"
                                 onClick={async () => {
                                     if (userId)
@@ -90,7 +90,7 @@ export default function Home({ product }) {
                                 }}
                             >
                                 Wishlist
-                            </div>
+                            </button>
 
                             <h3>{product.description}</h3>
                         </div>
@@ -106,6 +106,10 @@ export default function Home({ product }) {
 
                 h3 {
                     font-weight: regular;
+                }
+
+                button {
+                    all:unset;
                 }
 
                 .title a {

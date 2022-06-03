@@ -45,26 +45,20 @@ const Header = () => {
                         setSearch(e.target.value);
                     }}
                 />
-                <Link href={`/search?q=${search}`}>
-                    <div className="search-button">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                    </div>
-                </Link>
+                <a href={`/search?q=${search}`} className="search-button">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                </a>
             </div>
 
             <div id="user" className="user-menu">
-                <div className="tab">
+                <a className="tab" href={user ? "/account" : "/api/auth/login"}>
                     <FontAwesomeIcon icon={faUser} />
-                    {user ? (
-                        <a href="/account">{user.name}</a>
-                    ) : (
-                        <a href="/api/auth/login">Login</a>
-                    )}
-                </div>
+                    <p>{user ? user.name : "Login"}</p>
+                </a>
                 {user && (
-                    <div className="tab">
-                        <a href="/api/auth/logout">Logout</a>
-                    </div>
+                    <a href="/api/auth/logout" className="tab">
+                        Logout
+                    </a>
                 )}
             </div>
 
@@ -105,6 +99,7 @@ const Header = () => {
                     align-items: center;
                     height: 40px;
                     color: white;
+                    text-decoration: none;
                 }
 
                 .tab:hover,
@@ -114,14 +109,6 @@ const Header = () => {
                     color: #000000;
                     border-color: #000000;
                     cursor: pointer;
-                }
-
-                .tab a,
-                .tab a:visited,
-                .tab a:hover,
-                .tab a:active {
-                    color: inherit;
-                    text-decoration: none;
                 }
 
                 .tab-img {
@@ -151,6 +138,10 @@ const Header = () => {
                     align-items: center;
                     height: 40px;
                     color: white;
+                }
+
+                .clean-button {
+                    all: unset;
                 }
 
                 .search-button:hover,

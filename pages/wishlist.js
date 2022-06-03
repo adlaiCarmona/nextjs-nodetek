@@ -5,10 +5,10 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { useUser } from "@auth0/nextjs-auth0";
-import {encrypt} from "../helpers/index.js";
-import { TextAndBox } from '../components/MySkeleton'
+import { encrypt } from "../helpers/index.js";
+import { TextAndBox } from "../components/MySkeleton";
 
-const WishlistItem = ({ item, userId }) => {
+const WishlistItem = ({ item, userId, refresh, setRefresh }) => {
     return (
         <div className="wishlist-item">
             <div>
@@ -21,31 +21,38 @@ const WishlistItem = ({ item, userId }) => {
                 <h3>{item.description}</h3>
             </div>
             <div>
-                <div
+                <button
                     className="icon"
                     onClick={async () => {
-                        await fetch(
-                            `/api/db/user/list?listType=wishlist&userId=${encrypt(
-                                userId
-                            )}`,
-                            {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    productId: item._id,
-                                    operation: "remove",
-                                }),
-                            }
-                        );
+                        if (userId) {
+                            await fetch(
+                                `/api/db/user/list?listType=wishlist&userId=${encrypt(
+                                    userId
+                                )}`,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                        productId: item._id,
+                                        operation: "remove",
+                                    }),
+                                }
+                            );
+                            setRefresh(!refresh);
+                        }
                     }}
                 >
                     <FontAwesomeIcon icon={faTrashCan} />
-                </div>
+                </button>
             </div>
             <style jsx>
                 {`
+                    button {
+                        all: unset;
+                    }
+
                     .wishlist-item {
                         display: flex;
                         flex-direction: row;
@@ -86,7 +93,8 @@ export default function Home() {
     const { user, isLoading } = useUser();
     const [userId, setUserId] = useState(null);
     const [wishlist, setWishlist] = useState([]);
-    const [ isFetched, setIsFetched ] = useState(false);
+    const [isFetched, setIsFetched] = useState(false);
+    const [refresh, setRefresh] = useState(false);
 
     useEffect(async () => {
         const getData = async () => {
@@ -110,7 +118,7 @@ export default function Home() {
         };
 
         if (!isLoading) getData();
-    }, [isLoading]);
+    }, [isLoading, refresh]);
 
     return (
         <div id="root">
@@ -120,20 +128,31 @@ export default function Home() {
             </Head>
 
             <main className="section">
-                {!isFetched? <TextAndBox/>:<div className="container">
-                    <h1 className="title">Tu Wishlist</h1>
-                    {wishlist.length === 0 ? (
-                        <div>
-                            <h2 className="subtitle">
-                                No hay productos en tu wishlist.
-                            </h2>
-                        </div>
-                    ) : (
-                        wishlist.map((item, i) => {
-                            return <WishlistItem item={item} userId={userId} />;
-                        })
-                    )}
-                </div>}
+                {!isFetched ? (
+                    <TextAndBox />
+                ) : (
+                    <div className="container">
+                        <h1 className="title">Tu Wishlist</h1>
+                        {wishlist.length === 0 ? (
+                            <div>
+                                <h2 className="subtitle">
+                                    No hay productos en tu wishlist.
+                                </h2>
+                            </div>
+                        ) : (
+                            wishlist.map((item, i) => {
+                                return (
+                                    <WishlistItem
+                                        item={item}
+                                        userId={userId}
+                                        refresh={refresh}
+                                        setRefresh={setRefresh}
+                                    />
+                                );
+                            })
+                        )}
+                    </div>
+                )}
             </main>
 
             <style jsx>{`

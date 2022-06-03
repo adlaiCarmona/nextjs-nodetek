@@ -47,56 +47,56 @@ export default function Home() {
                     </div>
                     <div className="grid">
                         <Link href="/cart">
-                            <div className="grid-item">
-                                <div>Mi Carrito</div>
+                            <a className="grid-item">
+                                <p>Mi Carrito</p>
                                 <FontAwesomeIcon
                                     icon={faCartShopping}
                                     size="4x"
                                 />
-                            </div>
+                            </a>
                         </Link>
                         <Link href="/wishlist">
-                            <div className="grid-item">
-                                <div>Mi Wishlist</div>
+                            <a className="grid-item">
+                                <p>Mi Wishlist</p>
                                 <FontAwesomeIcon
                                     icon={faClipboardCheck}
                                     size="4x"
                                 />
-                            </div>
+                            </a>
                         </Link>
                         <Link href="/location">
-                            <div className="grid-item">
-                                <div>Mis Direcciones</div>
+                            <a className="grid-item">
+                                <p>Mis Direcciones</p>
                                 <FontAwesomeIcon
                                     icon={faMapLocationDot}
                                     size="4x"
                                 />
-                            </div>
+                            </a>
                         </Link>
                         <Link href="/payment">
-                            <div className="grid-item">
-                                <div>Mis Metodos de Pagos</div>
+                            <a className="grid-item">
+                                <p>Mis Metodos de Pagos</p>
                                 <FontAwesomeIcon
                                     icon={faCreditCard}
                                     size="4x"
                                 />
-                            </div>
+                            </a>
                         </Link>
                         <Link href="/info">
-                            <div className="grid-item">
-                                <div>Mi Información</div>
+                            <a className="grid-item">
+                                <p>Mi Información</p>
                                 <FontAwesomeIcon icon={faIdCard} size="4x" />
-                            </div>
+                            </a>
                         </Link>
                         {isAdmin && (
                             <Link href="/admin">
-                                <div className="grid-item">
-                                    <div>Administración</div>
+                                <a className="grid-item">
+                                    <p>Administración</p>
                                     <FontAwesomeIcon
                                         icon={faToolbox}
                                         size="4x"
                                     />
-                                </div>
+                                </a>
                             </Link>
                         )}
                     </div>

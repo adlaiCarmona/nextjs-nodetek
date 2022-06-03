@@ -91,9 +91,9 @@ const AddProduct = () => {
         <div id="addProduct" className="container">
             <div className="flex-row">
                 <h2 className="title">Añadir Producto</h2>
-                <div
+                <button
                     id="addProduct"
-                    className="addProduct"
+                    className="clean-button addProduct"
                     onClick={async () => {
                         console.log(newProduct);
                         if (true)
@@ -110,7 +110,7 @@ const AddProduct = () => {
                     }}
                 >
                     Add
-                </div>
+                </button>
             </div>
             <Box
                 component="form"
@@ -204,6 +204,10 @@ const AddProduct = () => {
                     line-height: 34px;
                 }
 
+                .clean-button {
+                    all: unset;
+                }
+
                 .addProduct {
                     padding: 0.6rem 2.5rem;
                     height: fit-content;
@@ -237,9 +241,9 @@ const ModifyProduct = ({ products }) => {
         <div id="modifyProduct" className="container">
             <div className="flex-row">
                 <h2 className="title">Modificar Producto</h2>
-                <div
+                <button
                     id="saveProduct"
-                    className="addProduct"
+                    className="clean-button addProduct"
                     onClick={async () => {
                         console.log(modifyProduct);
                         if (true)
@@ -256,7 +260,7 @@ const ModifyProduct = ({ products }) => {
                     }}
                 >
                     Guardar
-                </div>
+                </button>
             </div>
             <Box
                 component="form"
@@ -357,6 +361,11 @@ const ModifyProduct = ({ products }) => {
                     font-weight: 600;
                     font-size: 28;
                     line-height: 34px;
+                }
+
+                
+                .clean-button {
+                    all: unset;
                 }
 
                 .addProduct {

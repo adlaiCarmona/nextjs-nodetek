@@ -9,27 +9,27 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { encrypt } from "../helpers/index.js";
 import { TextAndBox } from '../components/MySkeleton'
 
-const ShoppingItem = (props) => {
+const ShoppingItem = ({item, userId, refresh, setRefresh}) => {
     return (
         <div className="shopping-item">
             <div>
-                <Image src={props.src} width={300} height={300} />
+                <Image src={item.img} width={300} height={300} />
             </div>
             <div className="shopping-item-info">
-                <h1>{props.name}</h1>
+                <h1>{item.name}</h1>
                 <hr />
-                <h2>${props.price}</h2>
-                <h3>{props.description}</h3>
+                <h2>${item.price}</h2>
+                <h3>{item.description}</h3>
             </div>
             <div>
-                <div
+                <button
                     className="icon"
                     onClick={async () => {
                         // console.log(`userId not encrypted ${props.userId}\nuserId encrypted ${encrypt(props.userId)}`)
-                        if (props.userId)
+                        if (userId){
                             await fetch(
                                 `/api/db/user/list?listType=shoppingCart&userId=${encrypt(
-                                    props.userId
+                                    userId
                                 )}`,
                                 {
                                     method: "POST",
@@ -37,18 +37,24 @@ const ShoppingItem = (props) => {
                                         "Content-Type": "application/json",
                                     },
                                     body: JSON.stringify({
-                                        productId: props.productId,
+                                        productId: item._id,
                                         operation: "remove",
                                     }),
                                 }
                             );
+                            setRefresh(!refresh);
+                        }
                     }}
                 >
                     <FontAwesomeIcon icon={faTrashCan} />
-                </div>
+                </button>
             </div>
             <style jsx>
                 {`
+                    button {
+                        all:unset;
+                    }
+
                     .shopping-item {
                         display: flex;
                         flex-direction: row;
@@ -90,6 +96,7 @@ export default function Home() {
     const [userId, setUserId] = useState(null);
     const [shoppingCart, setShoppingCart] = useState([]);
     const [ isFetched, setIsFetched ] = useState(false);
+    const [ refresh, setRefresh ] = useState(false);
 
     useEffect(async () => {
         const getData = async () => {
@@ -111,7 +118,7 @@ export default function Home() {
         };
 
         if (!isLoading) getData();
-    }, [isLoading]);
+    }, [isLoading, refresh]);
 
     return (
         <div id="root">
@@ -133,13 +140,10 @@ export default function Home() {
                         shoppingCart.map((item, i) => {
                             return (
                                 <ShoppingItem
-                                    name={item.name}
-                                    description={item.details}
-                                    price={item.price}
-                                    src={item.img}
+                                    item={item}
                                     userId={userId}
-                                    productId={item._id}
-                                    key={item._id}
+                                    refresh={refresh}
+                                    setRefresh={setRefresh}
                                 />
                             );
                         })
